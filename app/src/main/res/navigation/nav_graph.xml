@@ -13,11 +13,31 @@
         <action
             android:id="@+id/action_mainFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_addEditFragment"
+            app:destination="@id/addEditFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.duzi.arcitecturesample.detail.DetailFragment"
         android:label="DetailFragment"
-        tools:layout="@layout/fragment_detail"/>
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="taskId"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditFragment"
+        android:name="com.duzi.arcitecturesample.addedit.AddEditFragment"
+        android:label="AddEditFragment" >
+        <argument
+            android:name="taskId"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
 </navigation>
