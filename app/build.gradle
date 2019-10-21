@@ -42,6 +42,7 @@ android {
 
 ext {
     archLifecycleVersion = '2.1.0-rc01'
+    truthVersion = '0.44'
 }
 
 dependencies {
@@ -62,4 +63,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
     kapt "androidx.lifecycle:lifecycle-compiler:$archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$archLifecycleVersion"
+
+    // unit test
+    testImplementation "com.google.truth:truth:$truthVersion"
 }

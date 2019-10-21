@@ -70,7 +70,7 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
         loadTasks(true)
     }
 
-    private fun setFiltering(requestType: TasksFilterType) {
+    fun setFiltering(requestType: TasksFilterType) {
         _currentFiltering = requestType
 
         when (requestType) {
