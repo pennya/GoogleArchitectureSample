@@ -5,6 +5,7 @@ import com.duzi.arcitecturesample.MyApplication
 import com.duzi.arcitecturesample.ViewModelFactory
 
 fun Fragment.getViewModelFactory(): ViewModelFactory {
-    val repository = (requireContext() as MyApplication).repository
+    // 컴파일 시점에 Fake or Mock RemoteRepository 가 결정된다.
+    val repository = (requireContext() as MyApplication).taskRepository
     return ViewModelFactory(repository)
 }

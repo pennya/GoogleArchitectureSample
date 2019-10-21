@@ -4,8 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
-import com.duzi.arcitecturesample.data.TasksRepository
+import com.duzi.arcitecturesample.data.source.TasksRepository
 
 class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
@@ -34,9 +35,9 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
     fun completeTask(task: Task, completed: Boolean) {
         if (completed) {
-            // respository  completeTask
+            repository.completeTask(task)
         } else {
-            // respository  activateTask
+            repository.activateTask(task)
         }
 
         loadTasks(false)
@@ -45,7 +46,12 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
     fun loadTasks(forceUpdate: Boolean) {
         _dataLoading.value = true
 
-        // get task from network or local
+        val tasksResult = repository.getTasks(forceUpdate)
+        if (tasksResult is Result.Success) {
+            _items.value = tasksResult.data
+        } else {
+            _items.value = emptyList()
+        }
 
         _dataLoading.value = false
     }

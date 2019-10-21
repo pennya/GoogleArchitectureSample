@@ -1,14 +1,12 @@
 package com.duzi.arcitecturesample
 
 import android.app.Application
-import com.duzi.arcitecturesample.data.TasksRepository
+import com.duzi.arcitecturesample.data.source.TasksRepository
 
 class MyApplication: Application() {
 
-    val repository: TasksRepository
-        get() = object:TasksRepository {
-
-        }
+    val taskRepository: TasksRepository
+        get() = ServiceLocator.provideTasksRepository(this)
 
     override fun onCreate() {
         super.onCreate()

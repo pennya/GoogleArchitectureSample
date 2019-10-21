@@ -37,6 +37,8 @@ class MainFragment : Fragment() {
         setupListAdapter()
         setupObserver()
         setupFab()
+
+        viewModel.loadTasks(true)
     }
 
     private fun setupObserver() {

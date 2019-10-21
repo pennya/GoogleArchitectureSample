@@ -2,7 +2,7 @@ package com.duzi.arcitecturesample
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.duzi.arcitecturesample.data.TasksRepository
+import com.duzi.arcitecturesample.data.source.TasksRepository
 import com.duzi.arcitecturesample.detail.DetailViewModel
 
 /**
