@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ArcitectureSample</string>
+    <string name="label_all">All Tasks</string>
+    <string name="label_active">Active Tasks</string>
+    <string name="label_completed">Completed Tasks</string>
+
+    <string name="no_tasks_all">You have no tasks!</string>
+    <string name="no_tasks_active">You have no active tasks!</string>
+    <string name="no_tasks_completed">You have no completed tasks!</string>
 </resources>

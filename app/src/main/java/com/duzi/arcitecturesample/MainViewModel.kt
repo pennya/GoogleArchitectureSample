@@ -1,11 +1,14 @@
 package com.duzi.arcitecturesample
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
+import com.duzi.arcitecturesample.data.TasksFilterType
 import com.duzi.arcitecturesample.data.source.TasksRepository
 
 class MainViewModel(private val repository: TasksRepository): ViewModel() {
@@ -28,6 +31,12 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
     private val _noTaskIconRes = MutableLiveData<Int>()
     val noTaskIconRes: LiveData<Int> = _noTaskIconRes
+
+    private var _currentFiltering = TasksFilterType.ALL_TASKS
+
+    init {
+        setFiltering(TasksFilterType.ALL_TASKS)
+    }
 
     fun openTask(taskId: String) {
         _openTaskEvent.value = Event(taskId)
@@ -59,6 +68,40 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
     fun refresh() {
         loadTasks(true)
+    }
+
+    private fun setFiltering(requestType: TasksFilterType) {
+        _currentFiltering = requestType
+
+        when (requestType) {
+            TasksFilterType.ALL_TASKS -> {
+                setFilter(R.string.label_all,
+                    R.string.no_tasks_all,
+                    R.drawable.logo_no_fill)
+            }
+            TasksFilterType.ACTIVE_TASKS -> {
+                setFilter(
+                    R.string.label_active, R.string.no_tasks_active,
+                    R.drawable.ic_check_circle_96dp
+                )
+            }
+            TasksFilterType.COMPLETED_TASKS -> {
+                setFilter(
+                    R.string.label_completed, R.string.no_tasks_completed,
+                    R.drawable.ic_verified_user_96dp
+                )
+            }
+        }
+    }
+
+    private fun setFilter(
+        @StringRes filteringLabelString: Int,
+        @StringRes noTasksLabelString: Int,
+        @DrawableRes noTaskIconDrawable: Int
+    ) {
+        _currentFilteringLabel.value = filteringLabelString
+        _noTasksLabel.value = noTasksLabelString
+        _noTaskIconRes.value = noTaskIconDrawable
     }
 
     val empty: LiveData<Boolean> = Transformations.map(_items) {

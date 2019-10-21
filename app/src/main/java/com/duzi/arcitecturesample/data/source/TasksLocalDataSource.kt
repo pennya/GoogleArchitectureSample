@@ -5,23 +5,23 @@ import com.duzi.arcitecturesample.data.Task
 
 object TasksLocalDataSource: TasksDataSource {
     override fun getTasks(): Result<List<Task>> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return Result.Success(emptyList())
     }
 
     override fun saveTask(task: Task) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // insert
     }
 
     override fun deleteAllTasks() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // delete all
     }
 
     override fun completeTask(task: Task) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // updateCompleted true
     }
 
     override fun activateTask(task: Task) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // updateCompleted false
     }
 
 }
