@@ -10,6 +10,7 @@ import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.data.TasksFilterType
 import com.duzi.arcitecturesample.data.source.TasksRepository
+import java.util.ArrayList
 
 class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
@@ -57,7 +58,22 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
         val tasksResult = repository.getTasks(forceUpdate)
         if (tasksResult is Result.Success) {
-            _items.value = tasksResult.data
+            val tasks = tasksResult.data
+
+            val tasksToShow = ArrayList<Task>()
+            for (task in tasks) {
+               when (_currentFiltering) {
+                   TasksFilterType.ALL_TASKS -> tasksToShow.add(task)
+                   TasksFilterType.ACTIVE_TASKS -> if (task.isActive) {
+                       tasksToShow.add(task)
+                   }
+                   TasksFilterType.COMPLETED_TASKS -> if (task.isCompleted) {
+                       tasksToShow.add(task)
+                   }
+               }
+            }
+
+            _items.value = ArrayList(tasksToShow)
         } else {
             _items.value = emptyList()
         }
