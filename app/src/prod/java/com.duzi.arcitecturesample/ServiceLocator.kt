@@ -1,14 +1,17 @@
 package com.duzi.arcitecturesample
 
 import android.content.Context
+import androidx.room.Room
 import com.duzi.arcitecturesample.data.TasksRemoteDataSource
 import com.duzi.arcitecturesample.data.source.DefaultTasksRepository
 import com.duzi.arcitecturesample.data.source.TasksDataSource
-import com.duzi.arcitecturesample.data.source.TasksLocalDataSource
 import com.duzi.arcitecturesample.data.source.TasksRepository
+import com.duzi.arcitecturesample.data.source.local.TaskDatabase
+import com.duzi.arcitecturesample.data.source.local.TasksLocalDataSource
 
 object ServiceLocator {
-    var tasksRepository: TasksRepository? = null
+    private var tasksRepository: TasksRepository? = null
+    private var database: TaskDatabase? = null
 
     fun provideTasksRepository(context: Context): TasksRepository {
         return tasksRepository ?: createTasksRepository(context)
@@ -19,7 +22,17 @@ object ServiceLocator {
     }
 
     private fun createTaskLocalDataSource(context: Context): TasksDataSource {
-        // TODO  Room database
-        return TasksLocalDataSource
+        val database = this.database ?: createDatabase(context)
+        return TasksLocalDataSource(database.taskDao())
+    }
+
+    private fun createDatabase(context: Context): TaskDatabase {
+        val result = Room.databaseBuilder(
+            context.applicationContext,
+            TaskDatabase::class.java,
+            "Tasks.db"
+        ).build()
+        database = result
+        return result
     }
 }

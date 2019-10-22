@@ -38,12 +38,23 @@ android {
             dimension "default"
         }
     }
+
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
+    }
 }
 
 ext {
     archLifecycleVersion = '2.1.0-rc01'
     truthVersion = '0.44'
     archTestingVersion = '2.0.0'
+    roomVersion = '2.1.0'
 }
 
 dependencies {
@@ -68,4 +79,9 @@ dependencies {
     // unit test
     testImplementation "com.google.truth:truth:$truthVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+
+    // room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
 }
