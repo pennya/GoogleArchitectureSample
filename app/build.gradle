@@ -55,6 +55,7 @@ ext {
     truthVersion = '0.44'
     archTestingVersion = '2.0.0'
     roomVersion = '2.1.0'
+    coroutinesVersion = '1.2.1'
 }
 
 dependencies {
@@ -84,4 +85,10 @@ dependencies {
     implementation "androidx.room:room-runtime:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-ktx:$roomVersion"
+
+    // coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
 }

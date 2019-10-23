@@ -3,27 +3,36 @@ package com.duzi.arcitecturesample.data.source.local
 import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.data.source.TasksDataSource
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TasksLocalDataSource internal constructor(
-    private val tasksDao: TasksDao
+    private val tasksDao: TasksDao,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ): TasksDataSource {
-    override fun getTasks(): Result<List<Task>> {
-        return Result.Success(tasksDao.getTasks())
+
+    override suspend fun getTasks(): Result<List<Task>> = withContext(ioDispatcher) {
+        return@withContext try {
+            Result.Success(tasksDao.getTasks())
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
     }
 
-    override fun saveTask(task: Task) {
+    override suspend fun saveTask(task: Task) = withContext(ioDispatcher) {
         tasksDao.insertTask(task)
     }
 
-    override fun deleteAllTasks() {
+    override suspend fun deleteAllTasks() = withContext(ioDispatcher) {
         tasksDao.deleteTasks()
     }
 
-    override fun completeTask(task: Task) {
+    override suspend fun completeTask(task: Task) = withContext(ioDispatcher) {
         tasksDao.updateCompleted(task.id, true)
     }
 
-    override fun activateTask(task: Task) {
+    override suspend fun activateTask(task: Task) = withContext(ioDispatcher) {
         tasksDao.updateCompleted(task.id, false)
     }
 

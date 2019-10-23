@@ -14,24 +14,24 @@ class FakeRepositoryForTest: TasksRepository {
 
     var tasksServiceData: LinkedHashMap<String, Task> = LinkedHashMap()
 
-    override fun getTasks(forceUpdate: Boolean): Result<List<Task>> {
+    override suspend fun getTasks(forceUpdate: Boolean): Result<List<Task>> {
         return Result.Success(tasksServiceData.values.toList())
     }
 
-    override fun saveTask(task: Task) {
+    override suspend fun saveTask(task: Task) {
         tasksServiceData[task.id] = task
     }
 
-    override fun deleteAllTasks() {
+    override suspend fun deleteAllTasks() {
         tasksServiceData.clear()
     }
 
-    override fun completeTask(task: Task) {
+    override suspend fun completeTask(task: Task) {
         val completedTask = Task(task.title, task.description, true, task.id)
         tasksServiceData[task.id] = completedTask
     }
 
-    override fun activateTask(task: Task) {
+    override suspend fun activateTask(task: Task) {
         val activeTask = Task(task.title, task.description, false, task.id)
         tasksServiceData[task.id] = activeTask
     }

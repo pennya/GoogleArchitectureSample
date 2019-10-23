@@ -2,15 +2,13 @@ package com.duzi.arcitecturesample
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.data.TasksFilterType
 import com.duzi.arcitecturesample.data.source.TasksRepository
-import java.util.ArrayList
+import kotlinx.coroutines.launch
+import java.util.*
 
 class MainViewModel(private val repository: TasksRepository): ViewModel() {
 
@@ -43,7 +41,7 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
         _openTaskEvent.value = Event(taskId)
     }
 
-    fun completeTask(task: Task, completed: Boolean) {
+    fun completeTask(task: Task, completed: Boolean) = viewModelScope.launch {
         if (completed) {
             repository.completeTask(task)
         } else {
@@ -56,29 +54,31 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
     fun loadTasks(forceUpdate: Boolean) {
         _dataLoading.value = true
 
-        val tasksResult = repository.getTasks(forceUpdate)
-        if (tasksResult is Result.Success) {
-            val tasks = tasksResult.data
+        viewModelScope.launch {
+            val tasksResult = repository.getTasks(forceUpdate)
+            if (tasksResult is Result.Success) {
+                val tasks = tasksResult.data
 
-            val tasksToShow = ArrayList<Task>()
-            for (task in tasks) {
-               when (_currentFiltering) {
-                   TasksFilterType.ALL_TASKS -> tasksToShow.add(task)
-                   TasksFilterType.ACTIVE_TASKS -> if (task.isActive) {
-                       tasksToShow.add(task)
-                   }
-                   TasksFilterType.COMPLETED_TASKS -> if (task.isCompleted) {
-                       tasksToShow.add(task)
-                   }
-               }
+                val tasksToShow = ArrayList<Task>()
+                for (task in tasks) {
+                    when (_currentFiltering) {
+                        TasksFilterType.ALL_TASKS -> tasksToShow.add(task)
+                        TasksFilterType.ACTIVE_TASKS -> if (task.isActive) {
+                            tasksToShow.add(task)
+                        }
+                        TasksFilterType.COMPLETED_TASKS -> if (task.isCompleted) {
+                            tasksToShow.add(task)
+                        }
+                    }
+                }
+
+                _items.value = ArrayList(tasksToShow)
+            } else {
+                _items.value = emptyList()
             }
 
-            _items.value = ArrayList(tasksToShow)
-        } else {
-            _items.value = emptyList()
+            _dataLoading.value = false
         }
-
-        _dataLoading.value = false
     }
 
 
@@ -124,6 +124,10 @@ class MainViewModel(private val repository: TasksRepository): ViewModel() {
         it.isEmpty()
     }
 
-
+    fun deleteAllTasks() {
+        viewModelScope.launch {
+            repository.deleteAllTasks()
+        }
+    }
 
 }

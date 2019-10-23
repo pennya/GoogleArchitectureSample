@@ -5,15 +5,22 @@ import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.data.TasksFilterType
 import com.duzi.arcitecturesample.util.LiveDataTestUtil
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class TasksViewModelTest {
 
     private lateinit var tasksViewModel: MainViewModel
     private lateinit var tasksRepository: FakeRepositoryForTest
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -31,15 +38,21 @@ class TasksViewModelTest {
     }
 
     @After
-    fun releaseViewModel() {
-        tasksRepository.deleteAllTasks()
+    fun releaseViewModel() = mainCoroutineRule.runBlockingTest {
+        tasksViewModel.deleteAllTasks()
     }
 
     @Test
     fun loadAllTasksFromRepository_loadingTogglesAndDataLoaded() {
+        mainCoroutineRule.pauseDispatcher()
+
         tasksViewModel.setFiltering(TasksFilterType.ALL_TASKS)
 
         tasksViewModel.loadTasks(true)
+
+        assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isTrue()
+
+        mainCoroutineRule.resumeDispatcher()
 
         assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isFalse()
 
@@ -48,9 +61,15 @@ class TasksViewModelTest {
 
     @Test
     fun loadActiveTasksFromRepositoryAndLoadIntoView() {
+        mainCoroutineRule.pauseDispatcher()
+
         tasksViewModel.setFiltering(TasksFilterType.ACTIVE_TASKS)
 
         tasksViewModel.loadTasks(true)
+
+        assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isTrue()
+
+        mainCoroutineRule.resumeDispatcher()
 
         assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isFalse()
 
@@ -59,9 +78,15 @@ class TasksViewModelTest {
 
     @Test
     fun loadCompletedTasksFromRepositoryAndLoadIntoView() {
+        mainCoroutineRule.pauseDispatcher()
+
         tasksViewModel.setFiltering(TasksFilterType.COMPLETED_TASKS)
 
         tasksViewModel.loadTasks(true)
+
+        assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isTrue()
+
+        mainCoroutineRule.resumeDispatcher()
 
         assertThat(LiveDataTestUtil.getValue(tasksViewModel.dataLoading)).isFalse()
 
