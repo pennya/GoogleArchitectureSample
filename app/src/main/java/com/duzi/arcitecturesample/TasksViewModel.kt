@@ -10,7 +10,7 @@ import com.duzi.arcitecturesample.data.source.TasksRepository
 import kotlinx.coroutines.launch
 import java.util.*
 
-class MainViewModel(private val repository: TasksRepository): ViewModel() {
+class TasksViewModel(private val repository: TasksRepository): ViewModel() {
 
     private val _items = MutableLiveData<List<Task>>().apply { value = emptyList() }
     val items: LiveData<List<Task>> = _items

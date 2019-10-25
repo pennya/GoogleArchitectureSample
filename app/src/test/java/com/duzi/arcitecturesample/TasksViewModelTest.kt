@@ -15,7 +15,7 @@ import org.junit.Test
 @ExperimentalCoroutinesApi
 class TasksViewModelTest {
 
-    private lateinit var tasksViewModel: MainViewModel
+    private lateinit var tasksViewModel: TasksViewModel
     private lateinit var tasksRepository: FakeRepositoryForTest
 
     @ExperimentalCoroutinesApi
@@ -34,7 +34,7 @@ class TasksViewModelTest {
         val task3 = Task("Title3", "Description3", true)
         tasksRepository.addTasks(task1, task2, task3)
         
-        tasksViewModel = MainViewModel(tasksRepository)
+        tasksViewModel = TasksViewModel(tasksRepository)
     }
 
     @After

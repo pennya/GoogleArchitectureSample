@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.databinding.TaskItemBinding
 
-class MainListAdapter(private val viewModel: MainViewModel) :
+class MainListAdapter(private val viewModel: TasksViewModel) :
         ListAdapter<Task, MainListAdapter.ViewHolder>(TaskDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,7 +24,7 @@ class MainListAdapter(private val viewModel: MainViewModel) :
     class ViewHolder private constructor(val binding: TaskItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(viewModel: MainViewModel, item: Task) {
+        fun bind(viewModel: TasksViewModel, item: Task) {
             binding.viewmodel = viewModel
             binding.task = item
             binding.executePendingBindings()    // 바인딩을 즉시 실행해야 할 경우 사용

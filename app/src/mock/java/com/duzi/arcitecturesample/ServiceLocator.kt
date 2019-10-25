@@ -1,6 +1,7 @@
 package com.duzi.arcitecturesample
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import com.duzi.arcitecturesample.data.FakeTasksRemoteDataSource
 import com.duzi.arcitecturesample.data.source.DefaultTasksRepository
@@ -10,7 +11,7 @@ import com.duzi.arcitecturesample.data.source.TasksRepository
 import com.duzi.arcitecturesample.data.source.local.TaskDatabase
 
 object ServiceLocator {
-    private var tasksRepository: TasksRepository? = null
+    var tasksRepository: TasksRepository? = null
     private var database: TaskDatabase? = null
 
     fun provideTasksRepository(context: Context): TasksRepository {

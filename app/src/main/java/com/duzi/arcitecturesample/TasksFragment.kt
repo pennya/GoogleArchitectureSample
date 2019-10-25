@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.duzi.arcitecturesample.databinding.FragmentMainBinding
+import com.duzi.arcitecturesample.databinding.FragmentTasksBinding
 import com.duzi.arcitecturesample.util.getViewModelFactory
-import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.android.synthetic.main.fragment_tasks.*
 
-class MainFragment : Fragment() {
+class TasksFragment : Fragment() {
 
-    private val viewModel by viewModels<MainViewModel> { getViewModelFactory() }
-    private lateinit var viewDataBinding: FragmentMainBinding
+    private val viewModel by viewModels<TasksViewModel> { getViewModelFactory() }
+    private lateinit var viewDataBinding: FragmentTasksBinding
     private lateinit var listAdapter: MainListAdapter
 
     override fun onCreateView(
@@ -22,7 +22,7 @@ class MainFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewDataBinding = FragmentMainBinding.inflate(inflater, container, false)
+        viewDataBinding = FragmentTasksBinding.inflate(inflater, container, false)
             .apply {
                 viewmodel = viewModel
             }
@@ -64,14 +64,14 @@ class MainFragment : Fragment() {
     }
 
     private fun navigateToAddNewTask() {
-        val action = MainFragmentDirections
+        val action = TasksFragmentDirections
             .actionMainFragmentToAddEditFragment(null, "New Task")
 
         findNavController().navigate(action)
     }
 
     private fun openTaskDetails(taskId: String) {
-        val action = MainFragmentDirections
+        val action = TasksFragmentDirections
             .actionMainFragmentToDetailFragment(taskId)
 
         findNavController().navigate(action)

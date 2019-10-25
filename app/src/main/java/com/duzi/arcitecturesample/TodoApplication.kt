@@ -3,7 +3,7 @@ package com.duzi.arcitecturesample
 import android.app.Application
 import com.duzi.arcitecturesample.data.source.TasksRepository
 
-class MyApplication: Application() {
+class TodoApplication: Application() {
 
     val taskRepository: TasksRepository
         get() = ServiceLocator.provideTasksRepository(this)

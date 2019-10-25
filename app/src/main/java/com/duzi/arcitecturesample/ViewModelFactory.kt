@@ -16,8 +16,8 @@ class ViewModelFactory constructor(
     override fun <T : ViewModel> create(modelClass: Class<T>) =
         with(modelClass) {
             when {
-                isAssignableFrom(MainViewModel::class.java) ->
-                    MainViewModel(tasksRepository)
+                isAssignableFrom(TasksViewModel::class.java) ->
+                    TasksViewModel(tasksRepository)
                 isAssignableFrom(DetailViewModel::class.java) ->
                     DetailViewModel(tasksRepository)
                 else ->
