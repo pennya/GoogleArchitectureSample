@@ -56,6 +56,8 @@ ext {
     archTestingVersion = '2.0.0'
     roomVersion = '2.1.0'
     coroutinesVersion = '1.2.1'
+    androidXTestCoreVersion = '1.2.0'
+    androidXTestExtKotlinRunnerVersion = '1.1.1'
 }
 
 dependencies {
@@ -80,6 +82,7 @@ dependencies {
     // unit test
     testImplementation "com.google.truth:truth:$truthVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 
     // room
     implementation "androidx.room:room-runtime:$roomVersion"
@@ -91,4 +94,10 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
+    // androidX - JVM test
+    implementation "androidx.test:core:$androidXTestCoreVersion"
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    androidTestImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
 }
