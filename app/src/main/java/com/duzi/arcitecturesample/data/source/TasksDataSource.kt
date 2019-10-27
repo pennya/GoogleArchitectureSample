@@ -9,4 +9,5 @@ interface TasksDataSource {
     suspend fun deleteAllTasks()
     suspend fun completeTask(task: Task)
     suspend fun activateTask(task: Task)
+    suspend fun clearCompletedTasks()
 }

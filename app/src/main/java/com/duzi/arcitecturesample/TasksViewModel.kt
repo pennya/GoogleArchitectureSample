@@ -130,4 +130,10 @@ class TasksViewModel(private val repository: TasksRepository): ViewModel() {
         }
     }
 
+    fun clearCompletedTasks() {
+        viewModelScope.launch {
+            repository.clearCompletedTasks()
+            loadTasks(false)
+        }
+    }
 }

@@ -36,4 +36,7 @@ class TasksLocalDataSource internal constructor(
         tasksDao.updateCompleted(task.id, false)
     }
 
+    override suspend fun clearCompletedTasks() = withContext<Unit>(ioDispatcher) {
+        tasksDao.deleteCompletedTasks()
+    }
 }

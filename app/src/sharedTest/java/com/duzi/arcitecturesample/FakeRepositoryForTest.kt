@@ -36,6 +36,12 @@ class FakeRepositoryForTest: TasksRepository {
         tasksServiceData[task.id] = activeTask
     }
 
+    override suspend fun clearCompletedTasks() {
+        tasksServiceData = tasksServiceData.filterValues {
+            !it.isCompleted
+        } as LinkedHashMap<String, Task>
+    }
+
     @VisibleForTesting  // 메서드를 테스트하기 쉽게 만들기 위해 메서드의 가시성을 일반적으로 필요한 수준보다 더 높게 만들어준다
     fun addTasks(vararg tasks: Task) {
         for (task in tasks) {

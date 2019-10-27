@@ -29,4 +29,9 @@ object FakeTasksRemoteDataSource: TasksDataSource {
         TASKS_SERVICE_DATA[task.id] = activatedTask
     }
 
+    override suspend fun clearCompletedTasks() {
+        TASKS_SERVICE_DATA = TASKS_SERVICE_DATA.filterValues {
+            !it.isCompleted
+        } as LinkedHashMap<String, Task>
+    }
 }

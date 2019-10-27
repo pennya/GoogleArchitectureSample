@@ -82,6 +82,16 @@ class DefaultTasksRepository(
         }
     }
 
+    override suspend fun clearCompletedTasks() {
+        coroutineScope {
+            launch { tasksRemoteRepository.clearCompletedTasks() }
+            launch { tasksLocalRepository.clearCompletedTasks() }
+        }
+        withContext(ioDispatcher) {
+            cachedTasks?.entries?.removeAll { it.value.isCompleted }
+        }
+    }
+
     private suspend fun fetchTasksFromRemoteOrLocal(forceUpdate: Boolean): Result<List<Task>> {
         // 서버 데이터를 가져온다
         val remoteTasks = tasksRemoteRepository.getTasks()

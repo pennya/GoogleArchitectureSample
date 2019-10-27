@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.duzi.arcitecturesample.FakeRepositoryForTest
 import com.duzi.arcitecturesample.R
@@ -16,12 +16,19 @@ import com.duzi.arcitecturesample.TasksActivity
 import com.duzi.arcitecturesample.data.Task
 import com.duzi.arcitecturesample.data.source.TasksRepository
 import com.duzi.arcitecturesample.util.saveTaskBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.core.IsNot
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.annotation.LooperMode
+import org.robolectric.annotation.TextLayoutMode
 
+@ExperimentalCoroutinesApi
+@LooperMode(LooperMode.Mode.PAUSED)
+@TextLayoutMode(TextLayoutMode.Mode.REALISTIC)
 @RunWith(AndroidJUnit4::class)
 class TaskFragmentTest {
 
@@ -45,6 +52,23 @@ class TaskFragmentTest {
         launchActivity()
 
         onView(withText("Title1")).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun displayActiveTask() {
+        repository.saveTaskBlocking(Task("Title1", "Description1"))
+
+        launchActivity()
+
+        onView(withText("Title1")).check(matches(isDisplayed()))
+
+        onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText("Active")).perform(click())
+        onView(withText("Title1")).check(matches(isDisplayed()))
+
+        onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText("Completed")).perform(click())
+        onView(withText("Title1")).check(matches(IsNot.not(isDisplayed())))
     }
 
     private fun launchActivity(): ActivityScenario<TasksActivity> {
