@@ -1,6 +1,5 @@
 package com.duzi.arcitecturesample.tasks
 
-import android.os.Build
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ActivityScenario.launch
@@ -69,6 +68,34 @@ class TaskFragmentTest {
         onView(withId(R.id.menu_filter)).perform(click())
         onView(withText("Completed")).perform(click())
         onView(withText("Title1")).check(matches(IsNot.not(isDisplayed())))
+    }
+
+    @Test
+    fun displayCompletedTask() {
+        repository.saveTaskBlocking(Task("Title1", "Description1", isCompleted = true))
+
+        launchActivity()
+
+        onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText("Active")).perform(click())
+        onView(withText("Title1")).check(matches(IsNot.not(isDisplayed())))
+
+        onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText("Completed")).perform(click())
+        onView(withText("Title1")).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun showAllTasks() {
+        repository.saveTaskBlocking(Task("Title1", "Description1"))
+        repository.saveTaskBlocking(Task("Title2", "Description2", isCompleted = true))
+
+        launchActivity()
+
+        onView(withId(R.id.menu_filter)).perform(click())
+        onView(withText("All")).perform(click())
+        onView(withText("Title1")).check(matches(isDisplayed()))
+        onView(withText("Title2")).check(matches(isDisplayed()))
     }
 
     private fun launchActivity(): ActivityScenario<TasksActivity> {
