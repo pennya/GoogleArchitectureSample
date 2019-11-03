@@ -8,6 +8,7 @@ import com.duzi.arcitecturesample.data.source.TasksDataSource
 import com.duzi.arcitecturesample.data.source.TasksRepository
 import com.duzi.arcitecturesample.data.source.local.TaskDatabase
 import com.duzi.arcitecturesample.data.source.local.TasksLocalDataSource
+import kotlinx.coroutines.runBlocking
 
 object ServiceLocator {
     private var tasksRepository: TasksRepository? = null
@@ -34,5 +35,17 @@ object ServiceLocator {
         ).build()
         database = result
         return result
+    }
+
+    fun resetRepository() {
+        runBlocking {
+            TasksRemoteDataSource.deleteAllTasks()
+        }
+        database?.apply {
+            clearAllTables()
+            close()
+        }
+        database = null
+        tasksRepository = null
     }
 }

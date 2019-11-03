@@ -64,6 +64,7 @@ ext {
     androidXTestExtKotlinRunnerVersion = '1.1.1'
     espressoVersion = '3.2.0'
     robolectricVersion = '4.3'
+    fragmentVersion = '1.1.0-alpha07'
 }
 
 dependencies {
@@ -89,6 +90,7 @@ dependencies {
     testImplementation "com.google.truth:truth:$truthVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    implementation "androidx.fragment:fragment-testing:$fragmentVersion"
 
     // room
     implementation "androidx.room:room-runtime:$roomVersion"
@@ -116,4 +118,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espressoVersion"
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
     androidTestImplementation "org.robolectric:annotations:$robolectricVersion"
+    implementation "androidx.test.espresso:espresso-idling-resource:$espressoVersion"
+    androidTestImplementation "androidx.test.espresso.idling:idling-concurrent:$espressoVersion"
 }
