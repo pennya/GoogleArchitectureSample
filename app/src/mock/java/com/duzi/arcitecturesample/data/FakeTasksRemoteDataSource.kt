@@ -11,8 +11,19 @@ object FakeTasksRemoteDataSource: TasksDataSource {
         return Result.Success(TASKS_SERVICE_DATA.values.toList())
     }
 
+    override suspend fun getTask(taskId: String): Result<Task> {
+        TASKS_SERVICE_DATA[taskId]?.let {
+            return Result.Success(it)
+        }
+        return Result.Error(Exception("Could not find task"))
+    }
+
     override suspend fun saveTask(task: Task) {
         TASKS_SERVICE_DATA[task.id] = task
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        TASKS_SERVICE_DATA.remove(taskId)
     }
 
     override suspend fun deleteAllTasks() {

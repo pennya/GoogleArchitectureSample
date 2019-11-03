@@ -18,8 +18,19 @@ class FakeRepositoryForTest: TasksRepository {
         return Result.Success(tasksServiceData.values.toList())
     }
 
+    override suspend fun getTask(taskId: String, forceUpdate: Boolean): Result<Task> {
+        tasksServiceData[taskId]?.let {
+            return Result.Success(it)
+        }
+        return Result.Error(Exception("Could not find task"))
+    }
+
     override suspend fun saveTask(task: Task) {
         tasksServiceData[task.id] = task
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        tasksServiceData.remove(taskId)
     }
 
     override suspend fun deleteAllTasks() {

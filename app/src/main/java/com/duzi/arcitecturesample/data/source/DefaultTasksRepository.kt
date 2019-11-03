@@ -2,15 +2,15 @@ package com.duzi.arcitecturesample.data.source
 
 import com.duzi.arcitecturesample.data.Result
 import com.duzi.arcitecturesample.data.Task
+import com.duzi.arcitecturesample.util.EspressoIdlingResource
 import kotlinx.coroutines.*
 import java.lang.IllegalStateException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import kotlin.coroutines.CoroutineContext
 
 class DefaultTasksRepository(
-    private val tasksRemoteRepository: TasksDataSource,
-    private val tasksLocalRepository: TasksDataSource,
+    private val tasksRemoteDataSource: TasksDataSource,
+    private val tasksLocalDataSource: TasksDataSource,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ): TasksRepository {
 
@@ -43,20 +43,48 @@ class DefaultTasksRepository(
         }
     }
 
+    override suspend fun getTask(taskId: String, forceUpdate: Boolean): Result<Task> {
+        return withContext(ioDispatcher) {
+            // Respond immediately with cache if available
+            if (!forceUpdate) {
+                getTaskWithId(taskId)?.let {
+                    EspressoIdlingResource.decrement() // Set app as idle.
+                    return@withContext Result.Success(it)
+                }
+            }
+
+            val newTask = fetchTaskFromRemoteOrLocal(taskId, forceUpdate)
+
+            // Refresh the cache with the new tasks
+            (newTask as? Result.Success)?.let { cacheTask(it.data) }
+
+            return@withContext newTask
+        }
+    }
+
     override suspend fun saveTask(task: Task) {
         cacheAndPerform(task) {
             coroutineScope {
-                launch { tasksRemoteRepository.saveTask(it) }
-                launch { tasksLocalRepository.saveTask(it) }
+                launch { tasksRemoteDataSource.saveTask(it) }
+                launch { tasksLocalDataSource.saveTask(it) }
             }
         }
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        coroutineScope {
+            launch { tasksRemoteDataSource.deleteTask(taskId) }
+            launch { tasksLocalDataSource.deleteTask(taskId) }
+        }
+
+        cachedTasks?.remove(taskId)
     }
 
     override suspend fun deleteAllTasks() {
         withContext(ioDispatcher) {
             coroutineScope {
-                launch { tasksRemoteRepository.deleteAllTasks() }
-                launch { tasksLocalRepository.deleteAllTasks() }
+                launch { tasksRemoteDataSource.deleteAllTasks() }
+                launch { tasksLocalDataSource.deleteAllTasks() }
             }
         }
         cachedTasks?.clear()
@@ -66,8 +94,8 @@ class DefaultTasksRepository(
         cacheAndPerform(task) {
             it.isCompleted = true
             coroutineScope {
-                launch { tasksRemoteRepository.completeTask(task) }
-                launch { tasksLocalRepository.completeTask(task) }
+                launch { tasksRemoteDataSource.completeTask(task) }
+                launch { tasksLocalDataSource.completeTask(task) }
             }
         }
     }
@@ -76,16 +104,16 @@ class DefaultTasksRepository(
         cacheAndPerform(task) {
             it.isCompleted = true
             coroutineScope {
-                launch { tasksRemoteRepository.activateTask(task) }
-                launch { tasksLocalRepository.activateTask(task) }
+                launch { tasksRemoteDataSource.activateTask(task) }
+                launch { tasksLocalDataSource.activateTask(task) }
             }
         }
     }
 
     override suspend fun clearCompletedTasks() {
         coroutineScope {
-            launch { tasksRemoteRepository.clearCompletedTasks() }
-            launch { tasksLocalRepository.clearCompletedTasks() }
+            launch { tasksRemoteDataSource.clearCompletedTasks() }
+            launch { tasksLocalDataSource.clearCompletedTasks() }
         }
         withContext(ioDispatcher) {
             cachedTasks?.entries?.removeAll { it.value.isCompleted }
@@ -94,7 +122,7 @@ class DefaultTasksRepository(
 
     private suspend fun fetchTasksFromRemoteOrLocal(forceUpdate: Boolean): Result<List<Task>> {
         // 서버 데이터를 가져온다
-        val remoteTasks = tasksRemoteRepository.getTasks()
+        val remoteTasks = tasksRemoteDataSource.getTasks()
         when (remoteTasks) {
             is Result.Error -> "Remote data source fetch failed"
             is Result.Success -> {
@@ -110,18 +138,44 @@ class DefaultTasksRepository(
         }
 
         // 로컬 데이터를 가져온다
-        val localTasks = tasksLocalRepository.getTasks()
+        val localTasks = tasksLocalDataSource.getTasks()
         if (localTasks is Result.Success)
             return localTasks
 
         return Result.Error(Exception("Error fetching from remote and local"))
     }
 
-    private suspend fun refreshLocalDataSource(tasks: List<Task>) {
-        tasksLocalRepository.deleteAllTasks()
-        for (task in tasks) {
-            tasksLocalRepository.saveTask(task)
+    private suspend fun fetchTaskFromRemoteOrLocal(taskId: String, forceUpdate: Boolean)
+            : Result<Task> {
+
+        val remoteTask = tasksRemoteDataSource.getTask(taskId)
+        when (remoteTask) {
+            is Result.Error -> "Remote data source fetch failed"
+            is Result.Success -> {
+                refreshLocalDataSource(remoteTask.data)
+                return remoteTask
+            }
+            else -> throw IllegalStateException()
         }
+
+        if (forceUpdate) {
+            return Result.Error(Exception("Refresh failed"))
+        }
+
+        val localTasks = tasksLocalDataSource.getTask(taskId)
+        if (localTasks is Result.Success) return localTasks
+        return Result.Error(Exception("Error fetching from remote and local"))
+    }
+
+    private suspend fun refreshLocalDataSource(tasks: List<Task>) {
+        tasksLocalDataSource.deleteAllTasks()
+        for (task in tasks) {
+            tasksLocalDataSource.saveTask(task)
+        }
+    }
+
+    private suspend fun refreshLocalDataSource(task: Task) {
+        tasksLocalDataSource.saveTask(task)
     }
 
     private fun refreshCache(tasks: List<Task>) {
@@ -144,4 +198,6 @@ class DefaultTasksRepository(
         cachedTasks?.put(cachedTask.id, cachedTask)
         return cachedTask
     }
+
+    private fun getTaskWithId(id: String) = cachedTasks?.get(id)
 }

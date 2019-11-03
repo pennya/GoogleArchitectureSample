@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.duzi.arcitecturesample.data.source.TasksRepository
 import com.duzi.arcitecturesample.detail.DetailViewModel
+import com.duzi.arcitecturesample.statistics.StatisticsViewModel
 
 /**
  * Factory for all ViewModels.
@@ -19,6 +20,8 @@ class ViewModelFactory constructor(
                 isAssignableFrom(TasksViewModel::class.java) ->
                     TasksViewModel(tasksRepository)
                 isAssignableFrom(DetailViewModel::class.java) ->
+                    DetailViewModel(tasksRepository)
+                isAssignableFrom(StatisticsViewModel::class.java) ->
                     DetailViewModel(tasksRepository)
                 else ->
                     throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")

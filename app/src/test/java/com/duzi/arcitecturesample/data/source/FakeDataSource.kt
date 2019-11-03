@@ -12,8 +12,19 @@ class FakeDataSource(var tasks: MutableList<Task>? = mutableListOf()): TasksData
         )
     }
 
+    override suspend fun getTask(taskId: String): Result<Task> {
+        tasks?.firstOrNull { it.id == taskId }?.let { return Result.Success(it) }
+        return Result.Error(
+            Exception("Task not found")
+        )
+    }
+
     override suspend fun saveTask(task: Task) {
         tasks?.add(task)
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        tasks?.removeIf { it.id == taskId }
     }
 
     override suspend fun deleteAllTasks() {

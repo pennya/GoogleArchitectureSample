@@ -20,8 +20,25 @@ class TasksLocalDataSource internal constructor(
         }
     }
 
+    override suspend fun getTask(taskId: String): Result<Task> = withContext(ioDispatcher) {
+        try {
+            val task = tasksDao.getTaskById(taskId)
+            if (task != null) {
+                return@withContext Result.Success(task)
+            } else {
+                return@withContext Result.Error(Exception("Task not found!"))
+            }
+        } catch (e: Exception) {
+            return@withContext Result.Error(e)
+        }
+    }
+
     override suspend fun saveTask(task: Task) = withContext(ioDispatcher) {
         tasksDao.insertTask(task)
+    }
+
+    override suspend fun deleteTask(taskId: String) {
+        tasksDao.deleteTaskById(taskId)
     }
 
     override suspend fun deleteAllTasks() = withContext(ioDispatcher) {

@@ -19,6 +19,10 @@
         <action
             android:id="@+id/action_taskFragment_to_statisticsFragment"
             app:destination="@id/statisticsFragment" />
+        <argument
+            android:name="userMessage"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 
     <fragment
@@ -32,6 +36,9 @@
         <action
             android:id="@+id/action_detailFragment_to_taskFragment"
             app:destination="@id/taskFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_addEditFragment"
+            app:destination="@id/addEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditFragment"
@@ -62,4 +69,7 @@
             android:id="@+id/action_statisticsFragment_to_addEditFragment"
             app:destination="@id/addEditFragment" />
     </fragment>
+    <argument
+        android:name="userMessage"
+        android:defaultValue="0" />
 </navigation>

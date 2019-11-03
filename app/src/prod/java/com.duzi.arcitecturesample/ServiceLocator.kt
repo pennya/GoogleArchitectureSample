@@ -11,7 +11,7 @@ import com.duzi.arcitecturesample.data.source.local.TasksLocalDataSource
 import kotlinx.coroutines.runBlocking
 
 object ServiceLocator {
-    private var tasksRepository: TasksRepository? = null
+    var tasksRepository: TasksRepository? = null
     private var database: TaskDatabase? = null
 
     fun provideTasksRepository(context: Context): TasksRepository {
